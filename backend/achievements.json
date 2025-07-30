@@ -1,0 +1,296 @@
+[
+  {
+    "id": "for_the_recored",
+    "name": "For The Recored",
+    "description": "שיפרתי תיעוד קיים",
+    "image_url": "/images/for_the_recored.png"
+  },
+  {
+    "id": "debugger",
+    "name": "Debugger",  
+    "description": "מצאתי באג במהלך תחקור שוטף",
+    "image_url": "/images/debugger.png"
+  },
+  {
+    "id": "major_tom",
+    "name": "Major Tom",
+    "description": "העלתי גרסת Major",
+    "image_url": "/images/major_tom.png"
+  },
+  {
+    "id": "not_so_discrete",
+    "name": "Not So Discrete",
+    "description": "חרגתי בסנסורים",
+    "image_url": "/images/not_so_discrete.png"
+  },
+  {
+    "id": "sd_machine",
+    "name": "Sd Machine",
+    "description": "סגרתי את כל הSDים שלי",
+    "image_url": "/images/sd_machine.png"
+  },
+  {
+    "id": "family_guy",
+    "name": "Family Guy",
+    "description": "פתחתי משפחה חדשה",
+    "image_url": "/images/family_guy.png"
+  },
+  {
+    "id": "vendorist",
+    "name": "Vendorist",
+    "description": "פתחתי vendor חדש",
+    "image_url": "/images/vendorist.png"
+  },
+  {
+    "id": "commitment",
+    "name": "Commitment",
+    "description": "כתבתי את הcommit  הראשון שלי במודול",
+    "image_url": "/images/commitment.png"
+  },
+  {
+    "id": "celebrity",
+    "name": "Celebrity",
+    "description": "צויינתי בחדמ\"צ",
+    "image_url": "/images/celebrity.png"
+  },
+  {
+    "id": "oopsie",
+    "name": "Oopsie",
+    "description": "גרמתי לאירוע עיצומי",
+    "image_url": "/images/oopsie.png"
+  },
+  {
+    "id": "swiss_clock",
+    "name": "Swiss Clock",
+    "description": "דייקתי בהערכות זמנים בספרינט",
+    "image_url": "/images/swiss_clock.png"
+  },
+  {
+    "id": "hapshanist",
+    "name": "Hapshanist",
+    "description": "לא כתבתי אפילו שורת קוד אחת כל הספרינט",
+    "image_url": "/images/hapshanist.png"
+  },
+  {
+    "id": "wheres_waldo",
+    "name": "Where's Waldo?",
+    "description": "לא הייתי כל הספרינט",
+    "image_url": "/images/wheres_waldo.png"
+  },
+  {
+    "id": "like_a_baby",
+    "name": "Like A Baby",
+    "description": "סיימתי חפיפות",
+    "image_url": "/images/like_a_baby.png"
+  },
+  {
+    "id": "new_skill_unlocked",
+    "name": "New Skill Unlocked",
+    "description": "סיימתי חפיפות למודול",
+    "image_url": "/images/new_skill_unlocked.png"
+  },
+  {
+    "id": "artist",
+    "name": "Artist",
+    "description": "יצרתי מודול חדש",
+    "image_url": "/images/artist.png"
+  },
+  {
+    "id": "the_bomb",
+    "name": "The Bomb",
+    "description": "גרמתי לבריק למכשיר",
+    "image_url": "/images/the_bomb.png"
+  },
+  {
+    "id": "critic",
+    "name": "Critic",
+    "description": "עשיתי את הCR הראשון שלי",
+    "image_url": "/images/critic.png"
+  },
+  {
+    "id": "manufacturer",
+    "name": "Manufacturer",
+    "description": "הוצאתי גרסה למודול",
+    "image_url": "/images/manufacturer.png"
+  },
+  {
+    "id": "innocent_man",
+    "name": "Innocent Man",
+    "description": "סיימתי ניסוי תמימים בהצלחה",
+    "image_url": "/images/innocent_man.png"
+  },
+  {
+    "id": "approved",
+    "name": "Approved",
+    "description": "עברתי את הדיון מבצוע הראשון שלי",
+    "image_url": "/images/approved.png"
+  },
+  {
+    "id": "washer",
+    "name": "Washer",
+    "description": "חפפתי מישהו",
+    "image_url": "/images/washer.png"
+  },
+  {
+    "id": "good_friend",
+    "name": "Good Friend",
+    "description": "החלפתי מישהו בתורנות בהתנדבות",
+    "image_url": "/images/good_friend.png"
+  },
+  {
+    "id": "naming",
+    "name": "Naming",
+    "description": "נתתי שם שחור למוצר חדש",
+    "image_url": "/images/naming.png"
+  },
+  {
+    "id": "blublu",
+    "name": "Blublu",
+    "description": "ראיתי את כל הסרטים של כספיון",
+    "image_url": "/images/blublu.png"
+  },
+  {
+    "id": "pip_installer",
+    "name": "Pip Installer",
+    "description": "הרסתי למישהו אחר את הvenv",
+    "image_url": "/images/pip_installer.png"
+  },
+  {
+    "id": "super_hero",
+    "name": "Super Hero",
+    "description": "פתרתי SD ברמת CRITICAL",
+    "image_url": "/images/super_hero.png"
+  },
+  {
+    "id": "abu_bad_guy",
+    "name": "Abu Bad Guy",
+    "description": "קיבלתי שבת",
+    "image_url": "/images/abu_bad_guy.png"
+  },
+  {
+    "id": "lawyer",
+    "name": "Lawyer",
+    "description": "עליתי משפט",
+    "image_url": "/images/lawyer.png"
+  },
+  {
+    "id": "stylist",
+    "name": "Stylist",
+    "description": "קרעתי את המדי ב",
+    "image_url": "/images/stylist.png"
+  },
+  {
+    "id": "right_on_time",
+    "name": "Right On Time",
+    "description": "עמדתי בSLA של SD",
+    "image_url": "/images/right_on_time.png"
+  },
+  {
+    "id": "public_relations",
+    "name": "Public Relations",
+    "description": "עשיתי שת\"פ עם מישהו מחוץ למרכז",
+    "image_url": "/images/public_relations.png"
+  },
+  {
+    "id": "thinking_forward",
+    "name": "Thinking Forward",
+    "description": "הרמתי תשתית מדורית",
+    "image_url": "/images/thinking_forward.png"
+  },
+  {
+    "id": "thanks",
+    "name": "Thanks",
+    "description": "שיפרתי תשתית מדורית קיימת",
+    "image_url": "/images/thanks.png"
+  },
+  {
+    "id": "cashier",
+    "name": "Cashier",
+    "description": "עשיתי קליטת מכשירים",
+    "image_url": "/images/cashier.png"
+  },
+  {
+    "id": "food_supplier",
+    "name": "Food Supplier",
+    "description": "קניתי לישב\"צ",
+    "image_url": "/images/food_supplier.png"
+  },
+  {
+    "id": "responsible",
+    "name": "Responsible",
+    "description": "קראתי לחבר צוות שלא היה במשרד לבוא לדיילי",
+    "image_url": "/images/responsible.png"
+  },
+  {
+    "id": "sherlok_holmes",
+    "name": "Sherlok Holmes",
+    "description": "פתרתי תחקור קשוח",
+    "image_url": "/images/sherlok_holmes.png"
+  },
+  {
+    "id": "switcharoo",
+    "name": "Switcharoo",
+    "description": "החלפתי חבר צוות בשוטף",
+    "image_url": "/images/switcharoo.png"
+  },
+  {
+    "id": "maid",
+    "name": "Maid",
+    "description": "סיימתי את כל השוטף שלי בשבוע שוטף",
+    "image_url": "/images/maid.png"
+  },
+  {
+    "id": "need_a_wash",
+    "name": "Need A Wash",
+    "description": "במשך כל השבוע שוטף לא פתרתי אף SD",
+    "image_url": "/images/need_a_wash.png"
+  },
+  {
+    "id": "shnatz",
+    "name": "Shnatz",
+    "description": "מבצעתי יותר מסיאסטה אחת הספרינט",
+    "image_url": "/images/shnatz.png"
+  },
+  {
+    "id": "greek",
+    "name": "Greek",
+    "description": "מבצעתי אפסילון",
+    "image_url": "/images/greek.png"
+  },
+  {
+    "id": "sprinter",
+    "name": "Sprinter",
+    "description": "סיימתי את כל המשימות בספרינט",
+    "image_url": "/images/sprinter.png"
+  },
+  {
+    "id": "unsprinter",
+    "name": "Unsprinter",
+    "description": "לא עשיתי אף משימה ממה שתכננתי בספרינט",
+    "image_url": "/images/unsprinter.png"
+  },
+  {
+    "id": "blocked",
+    "name": "Blocked",
+    "description": "הייתי בלוק במשך ספרינט שלם על מישהו",
+    "image_url": "/images/blocked.png"
+  },
+  {
+    "id": "blocker",
+    "name": "Blocker",
+    "description": "בלקתי מישהו במשך ספרינט שלם",
+    "image_url": "/images/blocker.png"
+  },
+  {
+    "id": "cleaner",
+    "name": "Cleaner",
+    "description": "פיניתי את הפח",
+    "image_url": "/images/cleaner.png"
+  },
+  {
+    "id": "cleaner_plus",
+    "name": "Cleaner++",
+    "description": "פיניתי את 2 הפחים של המתחם",
+    "image_url": "/images/cleaner_plus.png"
+  }
+]
