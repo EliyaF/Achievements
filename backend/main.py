@@ -38,6 +38,9 @@ class AdminUpdate(BaseModel):
     achievement_id: str
     unlocked: bool
 
+# Admin user configuration
+ADMIN_USERNAME = "admin"
+
 # In-memory storage (in production, use a proper database)
 USERS_FILE = "users.json"
 ACHIEVEMENTS_FILE = "achievements.json"
@@ -110,6 +113,10 @@ def init_default_data():
         with open(USER_ACHIEVEMENTS_FILE, 'w', encoding='utf-8') as f:
             json.dump([], f, indent=2, ensure_ascii=False)
 
+# Helper function to check if user is admin
+def is_admin_user(username: str) -> bool:
+    return username == ADMIN_USERNAME
+
 # Load data functions
 def load_achievements():
     try:
@@ -152,16 +159,24 @@ def login(user: User):
     """Simple login - just track the username"""
     users = load_users()
     
-    # Check if user exists, if not add them
-    if user.username not in [u["username"] for u in users]:
+    # Check if user exists, if not add them (except for admin user)
+    if not is_admin_user(user.username) and user.username not in [u["username"] for u in users]:
         users.append({"username": user.username, "created_at": datetime.now().isoformat()})
         save_users(users)
     
-    return {"message": f"Welcome {user.username}!", "username": user.username}
+    return {
+        "message": f"Welcome {user.username}!", 
+        "username": user.username,
+        "is_admin": is_admin_user(user.username)
+    }
 
 @app.get("/achievements/{username}")
 def get_user_achievements(username: str):
     """Get all achievements with unlock status for a specific user"""
+    # Admin users cannot get achievements
+    if is_admin_user(username):
+        raise HTTPException(status_code=403, detail="Admin users cannot access achievements")
+    
     achievements = load_achievements()
     user_achievements = load_user_achievements()
     
@@ -176,15 +191,38 @@ def get_user_achievements(username: str):
 
 @app.get("/achievements")
 def get_all_achievements():
-    """Get all available achievements (admin endpoint)"""
+    """Get all available achievements with statistics"""
     achievements = load_achievements()
-    return {"achievements": achievements}
+    user_achievements = load_user_achievements()
+    users = load_users()
+    
+    # Calculate statistics for each achievement
+    total_users = len([u for u in users if not is_admin_user(u["username"])])
+    
+    achievements_with_stats = []
+    for achievement in achievements:
+        # Count how many users have unlocked this achievement
+        unlock_count = sum(1 for ua in user_achievements if ua["achievement_id"] == achievement["id"])
+        popularity_percentage = round((unlock_count / total_users * 100) if total_users > 0 else 0, 1)
+        
+        achievements_with_stats.append({
+            **achievement,
+            "unlock_count": unlock_count,
+            "popularity_percentage": popularity_percentage
+        })
+    
+    return {"achievements": achievements_with_stats}
 
 @app.post("/admin/update-achievement")
 def update_user_achievement(update: AdminUpdate):
     """Admin endpoint to update user achievement status"""
+    # Check if the user making the request is admin
     # In a real app, you'd check for admin authentication here
-    # For now, we'll allow any request
+    # For now, we'll allow any request but prevent admin from getting achievements
+    
+    # Prevent admin from getting achievements
+    if is_admin_user(update.username):
+        raise HTTPException(status_code=403, detail="Cannot assign achievements to admin user")
     
     achievements = load_achievements()
     user_achievements = load_user_achievements()
@@ -236,13 +274,16 @@ def update_user_achievement(update: AdminUpdate):
 def get_all_users():
     """Get all users (admin endpoint)"""
     users = load_users()
-    return {"users": users}
+    # Filter out admin user from the list
+    normal_users = [user for user in users if not is_admin_user(user["username"])]
+    return {"users": normal_users}
 
 @app.delete("/admin/delete-user/{username}")
 def delete_user(username: str):
     """Admin endpoint to delete a user and all their achievements"""
-    # In a real app, you'd check for admin authentication here
-    # For now, we'll allow any request
+    # Prevent deleting admin user
+    if is_admin_user(username):
+        raise HTTPException(status_code=403, detail="Cannot delete admin user")
     
     users = load_users()
     user_achievements = load_user_achievements()
@@ -253,8 +294,9 @@ def delete_user(username: str):
         raise HTTPException(status_code=404, detail="User not found")
     
     # Safety check: prevent deleting the last user
-    if len(users) <= 1:
-        raise HTTPException(status_code=400, detail="Cannot delete the last user in the system")
+    normal_users = [u for u in users if not is_admin_user(u["username"])]
+    if len(normal_users) <= 1:
+        raise HTTPException(status_code=400, detail="Cannot delete the last normal user in the system")
     
     # Remove user from users list
     users = [u for u in users if u["username"] != username]
@@ -276,9 +318,12 @@ def get_statistics():
     achievements = load_achievements()
     user_achievements = load_user_achievements()
     
-    # Calculate user statistics
+    # Filter out admin user from statistics
+    normal_users = [user for user in users if not is_admin_user(user["username"])]
+    
+    # Calculate user statistics (excluding admin)
     user_stats = []
-    for user in users:
+    for user in normal_users:
         user_achievement_count = len([ua for ua in user_achievements if ua["username"] == user["username"]])
         user_stats.append({
             "username": user["username"],
@@ -290,11 +335,13 @@ def get_statistics():
     # Sort users by achievement count (descending)
     user_stats.sort(key=lambda x: x["achievements_count"], reverse=True)
     
-    # Calculate achievement popularity
+    # Calculate achievement popularity (excluding admin achievements)
     achievement_popularity = []
     for achievement in achievements:
-        unlock_count = len([ua for ua in user_achievements if ua["achievement_id"] == achievement["id"]])
-        popularity_percentage = round((unlock_count / len(users)) * 100, 2) if len(users) > 0 else 0
+        # Count unlocks excluding admin user
+        unlock_count = len([ua for ua in user_achievements 
+                          if ua["achievement_id"] == achievement["id"] and not is_admin_user(ua["username"])])
+        popularity_percentage = round((unlock_count / len(normal_users)) * 100, 2) if len(normal_users) > 0 else 0
         achievement_popularity.append({
             "id": achievement["id"],
             "name": achievement["name"],
@@ -307,19 +354,21 @@ def get_statistics():
     # Sort achievements by popularity (descending)
     achievement_popularity.sort(key=lambda x: x["unlock_count"], reverse=True)
     
-    # Calculate overall statistics
-    total_users = len(users)
+    # Calculate overall statistics (excluding admin)
+    total_users = len(normal_users)
     total_achievements = len(achievements)
-    total_unlocks = len(user_achievements)
+    # Filter out admin achievements from total unlocks
+    normal_user_achievements = [ua for ua in user_achievements if not is_admin_user(ua["username"])]
+    total_unlocks = len(normal_user_achievements)
     average_achievements_per_user = round(total_unlocks / total_users, 2) if total_users > 0 else 0
     most_popular_achievement = achievement_popularity[0] if achievement_popularity else None
     least_popular_achievement = achievement_popularity[-1] if achievement_popularity else None
     
-    # Calculate recent activity (achievements unlocked in the last 30 days)
+    # Calculate recent activity (achievements unlocked in the last 30 days, excluding admin)
     from datetime import datetime, timedelta
     thirty_days_ago = datetime.now() - timedelta(days=30)
     recent_unlocks = [
-        ua for ua in user_achievements 
+        ua for ua in normal_user_achievements 
         if datetime.fromisoformat(ua["unlocked_at"]) > thirty_days_ago
     ]
     
@@ -341,6 +390,10 @@ def get_statistics():
 @app.get("/statistics/{username}")
 def get_user_statistics(username: str):
     """Get detailed statistics for a specific user"""
+    # Admin users cannot get personal statistics
+    if is_admin_user(username):
+        raise HTTPException(status_code=403, detail="Admin users cannot access personal statistics")
+    
     users = load_users()
     achievements = load_achievements()
     user_achievements = load_user_achievements()
@@ -354,9 +407,10 @@ def get_user_statistics(username: str):
     user_achievement_list = [ua for ua in user_achievements if ua["username"] == username]
     user_achievement_ids = [ua["achievement_id"] for ua in user_achievement_list]
     
-    # Calculate user's position in rankings
+    # Calculate user's position in rankings (excluding admin)
+    normal_users = [user for user in users if not is_admin_user(user["username"])]
     all_user_stats = []
-    for user in users:
+    for user in normal_users:
         user_achievement_count = len([ua for ua in user_achievements if ua["username"] == user["username"]])
         all_user_stats.append({
             "username": user["username"],
@@ -388,7 +442,7 @@ def get_user_statistics(username: str):
         "total_achievements": len(achievements),
         "completion_percentage": completion_percentage,
         "rank": user_rank,
-        "total_users": len(users),
+        "total_users": len(normal_users),
         "achievements": user_achievement_details
     }
 

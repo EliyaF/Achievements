@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { getUserAchievements } from '../services/api';
 import AchievementCard from './AchievementCard';
-import ThemeToggle from './ThemeToggle';
+import Header from './Header';
 import { useTheme } from '../contexts/ThemeContext';
 
 const Achievements = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
@@ -11,6 +10,8 @@ const Achievements = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
   const [filter, setFilter] = useState('all'); // all, unlocked, locked
   const [searchTerm, setSearchTerm] = useState('');
   const { isDark } = useTheme();
+
+
 
   useEffect(() => {
     fetchAchievements();
@@ -77,63 +78,12 @@ const Achievements = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
         : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'
     }`}>
       {/* Header */}
-      <div className="relative overflow-hidden">
-        <div className={`absolute inset-0 transition-colors duration-300 ${
-          isDark 
-            ? 'bg-gradient-to-r from-purple-600/20 to-blue-600/20' 
-            : 'bg-gradient-to-r from-purple-200/30 to-blue-200/30'
-        }`}></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
-                  <span className="text-xl">🏆</span>
-                </div>
-                <div>
-                  <h1 className={`text-2xl font-bold transition-colors duration-300 ${
-                    isDark ? 'text-white' : 'text-gray-900'
-                  }`}>Achievements</h1>
-                  <p className={`text-sm transition-colors duration-300 ${
-                    isDark ? 'text-purple-200' : 'text-purple-700'
-                  }`}>{unlockedCount}/{totalCount} Unlocked</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="text-right">
-                <p className={`text-sm transition-colors duration-300 ${
-                  isDark ? 'text-purple-200' : 'text-purple-700'
-                }`}>Welcome back</p>
-                <p className={`font-semibold transition-colors duration-300 ${
-                  isDark ? 'text-white' : 'text-gray-900'
-                }`}>{currentUser.username}</p>
-              </div>
-              <div className="flex space-x-3">
-                <Link
-                  to="/statistics"
-                  className="w-24 bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 text-white px-4 py-2 rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl text-center"
-                >
-                  Statistics
-                </Link>
-                <Link
-                  to="/admin"
-                  className="w-24 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-4 py-2 rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl text-center"
-                >
-                  Admin
-                </Link>
-                <button
-                  onClick={onLogout}
-                  className="w-24 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl transition-all duration-200 font-medium text-center"
-                >
-                  Logout
-                </button>
-              </div>
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </div>
+      <Header 
+        currentUser={currentUser}
+        onLogout={onLogout}
+        title="Achievements"
+        subtitle={`${unlockedCount}/${totalCount} Unlocked`}
+      />
 
       {/* Progress Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">

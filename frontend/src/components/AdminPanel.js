@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { getAllUsers, getAllAchievements, updateUserAchievement, deleteUser } from '../services/api';
+import Header from './Header';
 import { useTheme } from '../contexts/ThemeContext';
 
 const AdminPanel = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
@@ -13,7 +13,12 @@ const AdminPanel = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
   const [userToDelete, setUserToDelete] = useState('');
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const { isDark } = useTheme();
+    const { isDark } = useTheme();
+
+  // Helper function to check if user is admin
+  const isAdminUser = (username) => {
+    return username === 'admin';
+  };
 
   useEffect(() => {
     fetchData();
@@ -38,11 +43,8 @@ const AdminPanel = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
       setUsers(usersData.users);
       setAchievements(achievementsData.achievements);
       
-      // Set current user as default, fallback to first user if current user not found
-      if (usersData.users.length > 0) {
-        const currentUserInList = usersData.users.find(user => user.username === currentUser.username);
-        setSelectedUser(currentUserInList ? currentUser.username : usersData.users[0].username);
-      }
+      // Set default to empty - user must select a user
+      setSelectedUser('');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -70,6 +72,12 @@ const AdminPanel = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
   const handleToggleAchievement = async (achievementId) => {
     if (!selectedUser) {
       setError('Please select a user first');
+      return;
+    }
+
+    // Prevent managing admin user achievements
+    if (isAdminUser(selectedUser)) {
+      setError('Cannot manage achievements for admin user');
       return;
     }
 
@@ -101,6 +109,12 @@ const AdminPanel = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
       return;
     }
 
+    // Prevent deleting admin user
+    if (isAdminUser(userToDelete)) {
+      setError('Cannot delete admin user');
+      return;
+    }
+
     setIsLoading(true);
     setError('');
     setMessage('');
@@ -128,6 +142,12 @@ const AdminPanel = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
   };
 
   const confirmDeleteUser = (username) => {
+    // Prevent deleting admin user
+    if (isAdminUser(username)) {
+      setError('Cannot delete admin user');
+      return;
+    }
+
     // Warn if trying to delete current user
     if (username === currentUser.username) {
       setError('Warning: You are trying to delete your own account. This will log you out immediately.');
@@ -169,37 +189,12 @@ const AdminPanel = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
         : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'
     }`}>
       {/* Header */}
-      <div className={`border-b transition-colors duration-300 ${
-        isDark 
-          ? 'glass-effect border-white/20' 
-          : 'bg-white/80 backdrop-blur-sm border-gray-200'
-      }`}>
-        <div className="max-w-full mx-auto px-2 sm:px-4 lg:px-6">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center space-x-4">
-              <h1 className={`text-3xl font-bold transition-colors duration-300 ${
-                isDark ? 'text-white' : 'text-gray-900'
-              }`}>
-                ⚙️ Admin Panel
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link
-                to="/achievements"
-                className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-4 py-2 rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
-              >
-                ← Back to Main Page
-              </Link>
-              <button
-                onClick={onLogout}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Header 
+        currentUser={currentUser}
+        onLogout={onLogout}
+        title="Admin Panel"
+        subtitle="User & Achievement Management"
+      />
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-8">
@@ -281,7 +276,7 @@ const AdminPanel = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
         </div>
 
         {/* Achievements Grid */}
-        {selectedUser && (
+        {selectedUser && !isAdminUser(selectedUser) && (
           <div className={`rounded-xl p-6 mb-8 transition-all duration-300 ${
             isDark 
               ? 'glass-effect' 
@@ -375,6 +370,26 @@ const AdminPanel = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
                 }`} dir="auto">No achievements found matching your search.</p>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Admin User Notice */}
+        {selectedUser && isAdminUser(selectedUser) && (
+          <div className={`rounded-xl p-6 mb-8 transition-all duration-300 ${
+            isDark 
+              ? 'bg-yellow-500/20 border border-yellow-500/30' 
+              : 'bg-yellow-50 border border-yellow-200'
+          }`}>
+            <h2 className={`text-2xl font-bold mb-4 transition-colors duration-300 ${
+              isDark ? 'text-white' : 'text-gray-900'
+            }`}>
+              Admin User Selected
+            </h2>
+            <p className={`transition-colors duration-300 ${
+              isDark ? 'text-yellow-200' : 'text-yellow-700'
+            }`}>
+              The admin user cannot have achievements assigned or managed. Admin users are excluded from normal achievement tracking and statistics.
+            </p>
           </div>
         )}
 

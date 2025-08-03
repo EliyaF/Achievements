@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { getStatistics, getUserStatistics } from '../services/api';
+import Header from './Header';
 import { useTheme } from '../contexts/ThemeContext';
 
 const Statistics = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
@@ -8,7 +8,12 @@ const Statistics = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
   const [userStats, setUserStats] = useState(null);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('rankings');
-  const { isDark } = useTheme();
+    const { isDark } = useTheme();
+
+  // Helper function to check if user is admin
+  const isAdminUser = (user) => {
+    return user && user.isAdmin;
+  };
 
   useEffect(() => {
     fetchStatistics();
@@ -21,7 +26,8 @@ const Statistics = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
     try {
       const [statsData, userStatsData] = await Promise.all([
         getStatistics(),
-        getUserStatistics(currentUser.username)
+        // Only fetch user statistics if not admin
+        isAdminUser(currentUser) ? Promise.resolve(null) : getUserStatistics(currentUser.username)
       ]);
       setStatistics(statsData);
       setUserStats(userStatsData);
@@ -79,7 +85,7 @@ const Statistics = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
     );
   }
 
-  if (!statistics || !userStats) {
+  if (!statistics) {
     return null;
   }
 
@@ -92,46 +98,12 @@ const Statistics = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
         : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'
     }`}>
       {/* Header */}
-      <div className="relative overflow-hidden">
-        <div className={`absolute inset-0 transition-colors duration-300 ${
-          isDark 
-            ? 'bg-gradient-to-r from-purple-600/20 to-blue-600/20' 
-            : 'bg-gradient-to-r from-purple-200/30 to-blue-200/30'
-        }`}></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
-                  <span className="text-xl">📊</span>
-                </div>
-                <div>
-                  <h1 className={`text-2xl font-bold transition-colors duration-300 ${
-                    isDark ? 'text-white' : 'text-gray-900'
-                  }`}>Statistics</h1>
-                  <p className={`text-sm transition-colors duration-300 ${
-                    isDark ? 'text-purple-200' : 'text-purple-700'
-                  }`}>Achievement Analytics & Rankings</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link
-                to="/achievements"
-                className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-4 py-2 rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
-              >
-                ← Back
-              </Link>
-              <button
-                onClick={onLogout}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl transition-all duration-200 font-medium"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Header 
+        currentUser={currentUser}
+        onLogout={onLogout}
+        title="Statistics"
+        subtitle="Achievement Analytics & Rankings"
+      />
 
       {/* Navigation Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -141,7 +113,7 @@ const Statistics = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
           {[
             { id: 'rankings', label: 'User Rankings', icon: '🏆' },
             { id: 'achievements', label: 'Achievement Stats', icon: '🎯' },
-            { id: 'personal', label: 'My Stats', icon: '👤' }
+            ...(isAdminUser(currentUser) ? [] : [{ id: 'personal', label: 'My Stats', icon: '👤' }])
           ].map((tab) => (
             <button
               key={tab.id}
@@ -296,7 +268,7 @@ const Statistics = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
           </div>
         )}
 
-        {activeTab === 'personal' && (
+        {activeTab === 'personal' && !isAdminUser(currentUser) && userStats && (
           <div className="space-y-6">
             {/* Personal Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -404,6 +376,26 @@ const Statistics = ({ currentUser, onLogout, isLoading, setIsLoading }) => {
                 ))}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Admin User Notice for Personal Tab */}
+        {activeTab === 'personal' && isAdminUser(currentUser) && (
+          <div className={`backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 ${
+            isDark 
+              ? 'bg-yellow-500/20 border-yellow-500/30' 
+              : 'bg-yellow-50 border-yellow-200'
+          }`}>
+            <h3 className={`text-xl font-bold mb-4 transition-colors duration-300 ${
+              isDark ? 'text-white' : 'text-gray-900'
+            }`}>
+              Admin User Notice
+            </h3>
+            <p className={`transition-colors duration-300 ${
+              isDark ? 'text-yellow-200' : 'text-yellow-700'
+            }`}>
+              Admin users cannot access personal statistics as they are excluded from normal achievement tracking and rankings.
+            </p>
           </div>
         )}
       </div>

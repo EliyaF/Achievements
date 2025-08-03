@@ -4,6 +4,7 @@ import Login from './components/Login';
 import Achievements from './components/Achievements';
 import AdminPanel from './components/AdminPanel';
 import Statistics from './components/Statistics';
+import AllAchievements from './components/AllAchievements';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import './App.css';
 
@@ -25,14 +26,19 @@ function AppContent() {
     document.body.className = isDark ? 'dark' : 'light';
   }, [isDark]);
 
-  const handleLogin = (username) => {
-    setCurrentUser({ username });
-    localStorage.setItem('currentUser', JSON.stringify({ username }));
+  const handleLogin = (username, isAdmin = false) => {
+    setCurrentUser({ username, isAdmin });
+    localStorage.setItem('currentUser', JSON.stringify({ username, isAdmin }));
   };
 
   const handleLogout = () => {
     setCurrentUser(null);
     localStorage.removeItem('currentUser');
+  };
+
+  // Helper function to check if user is admin
+  const isAdminUser = (user) => {
+    return user && user.isAdmin;
   };
 
   return (
@@ -47,7 +53,10 @@ function AppContent() {
             path="/" 
             element={
               currentUser ? 
-                <Navigate to="/achievements" replace /> : 
+                (isAdminUser(currentUser) ? 
+                  <Navigate to="/admin" replace /> : 
+                  <Navigate to="/achievements" replace />
+                ) : 
                 <Login onLogin={handleLogin} isLoading={isLoading} setIsLoading={setIsLoading} />
             } 
           />
@@ -55,8 +64,24 @@ function AppContent() {
             path="/achievements" 
             element={
               currentUser ? 
-                <Achievements 
-                  currentUser={currentUser} 
+                (isAdminUser(currentUser) ? 
+                  <Navigate to="/admin" replace /> : 
+                  <Achievements 
+                    currentUser={currentUser} 
+                    onLogout={handleLogout}
+                    isLoading={isLoading}
+                    setIsLoading={setIsLoading}
+                  />
+                ) : 
+                <Navigate to="/" replace />
+            } 
+          />
+          <Route 
+            path="/all-achievements" 
+            element={
+              currentUser ? 
+                <AllAchievements 
+                  currentUser={currentUser}
                   onLogout={handleLogout}
                   isLoading={isLoading}
                   setIsLoading={setIsLoading}

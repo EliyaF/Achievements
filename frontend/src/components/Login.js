@@ -21,7 +21,17 @@ const Login = ({ onLogin, isLoading, setIsLoading }) => {
     setError('');
 
     try {
-      // Check if user already exists
+      // Check if user is admin
+      const isAdmin = username.trim().toLowerCase() === 'admin';
+      
+      if (isAdmin) {
+        // Admin user - proceed directly without checking existing users
+        await loginUser(username.trim());
+        onLogin(username.trim(), true); // Pass isAdmin = true
+        return;
+      }
+
+      // Check if user already exists (for non-admin users)
       const usersResponse = await getAllUsers();
       const existingUsers = usersResponse.users;
       const userExists = existingUsers.some(user => user.username === username.trim());
@@ -35,7 +45,7 @@ const Login = ({ onLogin, isLoading, setIsLoading }) => {
       
       // User exists, proceed with login
       await loginUser(username.trim());
-      onLogin(username.trim());
+      onLogin(username.trim(), false); // Pass isAdmin = false
     } catch (err) {
       setError(err.message);
     } finally {
@@ -49,7 +59,7 @@ const Login = ({ onLogin, isLoading, setIsLoading }) => {
 
     try {
       await loginUser(pendingUser);
-      onLogin(pendingUser);
+      onLogin(pendingUser, false); // Pass isAdmin = false for new users
       setShowConfirmation(false);
       setPendingUser('');
     } catch (err) {
@@ -140,7 +150,7 @@ const Login = ({ onLogin, isLoading, setIsLoading }) => {
             <p className={`text-sm transition-colors duration-300 ${
               isDark ? 'text-gray-300' : 'text-gray-500'
             }`}>
-              אין צורך בסימסא :)
+              אין צורך בסיסמא :)
             </p>
           </div>
         </div>

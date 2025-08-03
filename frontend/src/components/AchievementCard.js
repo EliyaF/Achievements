@@ -6,8 +6,14 @@ const AchievementCard = ({ achievement }) => {
   const { isDark } = useTheme();
 
   return (
-    <div className={`achievement-card rounded-xl p-4 transition-all duration-500 ${
-      unlocked ? 'achievement-unlocked' : 'achievement-locked'
+    <div className={`achievement-card rounded-xl p-4 transition-all duration-500 hover:scale-105 ${
+      unlocked 
+        ? isDark 
+          ? 'achievement-unlocked bg-gradient-to-br from-green-900/30 via-emerald-800/30 to-green-900/30 border border-green-500/40 shadow-xl shadow-green-500/20 hover:shadow-2xl hover:shadow-green-500/30 hover:border-green-400/60'
+          : 'achievement-unlocked bg-gradient-to-br from-green-100/95 via-emerald-50/95 to-green-100/95 border border-green-300 shadow-xl shadow-green-500/10 hover:shadow-2xl hover:shadow-green-500/20 hover:border-green-400 hover:bg-gradient-to-br hover:from-green-50 hover:via-emerald-50/80 hover:to-green-50'
+        : isDark
+          ? 'achievement-locked bg-gradient-to-br from-slate-800/60 via-slate-700/60 to-slate-800/60 border border-slate-600/40 hover:border-slate-500/60'
+          : 'achievement-locked bg-gradient-to-br from-white/95 via-gray-50/95 to-white/95 border border-gray-200 shadow-lg hover:border-gray-300'
     }`}>
       <div className="flex flex-col items-center text-center space-y-2">
         {/* Achievement Image */}
